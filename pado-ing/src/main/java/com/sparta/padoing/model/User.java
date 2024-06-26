@@ -1,25 +1,41 @@
 package com.sparta.padoing.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-public class User {
+@Table(name = "users")
+@NoArgsConstructor
+public class User extends TimeStamped{
 
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
-    private String username;
-    private String name;
-
+    @Column(name="email", nullable = false, unique = true)
     private String email;
 
-    private String role;
+    @Column(name="password")
+    private String password;
+
+    @Column(name="username")
+    private String username;
+
+    @Column(name="name")
+    private String name;
+
+//    @Column(name="grade")
+//    private String grade;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="role", nullable = false)
+    private Role role;
+
+//    @Column(name="is_active", nullable = false)
+//    private boolean isActive;
 }

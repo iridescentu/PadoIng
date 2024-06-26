@@ -10,13 +10,12 @@ public class MainController {
     @GetMapping("/")
     @ResponseBody
     public String mainAPI() {
-
         return "main route";
     }
 
-    @GetMapping("/logintest")
+    @GetMapping("/loginTest")
+    @ResponseBody
     public String loginAPI() {
-
         return "login route";
     }
 }

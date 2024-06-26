@@ -34,6 +34,7 @@ import com.sparta.padoing.dto.GoogleResponse;
 import com.sparta.padoing.dto.OAuth2Response;
 import com.sparta.padoing.dto.UserDTO;
 import com.sparta.padoing.model.CustomOAuth2User;
+import com.sparta.padoing.model.Role;
 import com.sparta.padoing.model.User;
 import com.sparta.padoing.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -44,11 +45,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-
     private final UserRepository userRepository;
 
     public CustomOAuth2UserService(UserRepository userRepository) {
-
         this.userRepository = userRepository;
     }
 
@@ -61,13 +60,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
         if (registrationId.equals("google")) {
-
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        }
-        else {
-
+        } else {
             return null;
         }
+
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
         User existData = userRepository.findByUsername(username);
 
@@ -77,19 +74,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setUsername(username);
             user.setEmail(oAuth2Response.getEmail());
             user.setName(oAuth2Response.getName());
-            user.setRole("ROLE_USER");
+            user.setRole(Role.USER);
 
             userRepository.save(user);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
             userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole("ROLE_USER");
+            userDTO.setRole(Role.USER);
 
             return new CustomOAuth2User(userDTO);
         }
         else {
-
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
 
