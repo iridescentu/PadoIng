@@ -23,8 +23,8 @@ public class UserRequestDto {
     @NotNull(message = "역할은 필수입니다.")
     private Role role;
 
-//    @NotNull(message = "등급은 필수입니다.")
-//    private String grade;
+    @NotNull(message = "등급은 필수입니다.")
+    private String grade;
 
-    private boolean isActive;
+//    private boolean isActive;
 }
