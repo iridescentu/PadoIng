@@ -78,7 +78,7 @@
 //    }
 //}
 
-package com.sparta.padoing.dto;
+package com.sparta.padoing.dto.response;
 
 import java.util.Map;
 

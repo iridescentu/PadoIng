@@ -1,4 +1,4 @@
-package com.sparta.padoing.dto;
+package com.sparta.padoing.dto.response;
 
 public class ResponseDto<T> {
 

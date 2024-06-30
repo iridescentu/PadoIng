@@ -34,4 +34,7 @@ public class Video {
 
     @Column(nullable = false)
     private LocalDateTime uploadDate;
+
+    @Column(nullable = false)
+    private int duration;
 }

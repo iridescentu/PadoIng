@@ -1,4 +1,4 @@
-package com.sparta.padoing.dto;
+package com.sparta.padoing.dto.request;
 
 import com.sparta.padoing.model.Role;
 import jakarta.validation.constraints.Email;

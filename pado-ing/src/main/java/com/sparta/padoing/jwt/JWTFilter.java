@@ -23,8 +23,13 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/oauth2/authorization/google");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // cookies 들을 불러온 뒤 Authorization key에 담긴 쿠키를 찾음
         String authorization = null;
         Cookie[] cookies = request.getCookies();
 
@@ -37,42 +42,37 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        // Authorization 헤더 검증
         if (authorization == null) {
-            System.out.println("token null");
+            System.out.println("Token is null");
             filterChain.doFilter(request, response);
-            // 조건이 해당되면 메소드 종료
             return;
         }
 
-        // 토큰
         String token = authorization;
+        System.out.println("Token: " + token);
 
-        // 토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
-            System.out.println("token 유효 기간 만료");
+            System.out.println("Token is expired");
             filterChain.doFilter(request, response);
-            // 조건이 해당되면 메소드 종료
             return;
         }
 
-        // 토큰에서 username과 role 획득
         String username = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
+        System.out.println("Username from token: " + username);
+        System.out.println("Role from token: " + role);
 
-        // userDTO를 생성하여 값 set
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(username);
         userDTO.setRole(Role.valueOf(role));
 
-        // UserDetails에 회원 정보 객체 담기
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO, jwtUtil.getClaims(token));
 
-        // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+        System.out.println("AuthToken: " + authToken);
 
-        // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
+        System.out.println("SecurityContextHolder setAuthentication: " + SecurityContextHolder.getContext().getAuthentication());
 
         filterChain.doFilter(request, response);
     }

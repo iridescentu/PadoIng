@@ -65,7 +65,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/api/videos", "/api/videos/{id}").permitAll() // GET 요청에 대해 허용
+                        .requestMatchers("/api/videos/**").authenticated() // POST, PUT, DELETE 요청에 대해 인증 요구
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS
