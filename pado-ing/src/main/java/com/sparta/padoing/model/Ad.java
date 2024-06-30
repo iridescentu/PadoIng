@@ -25,8 +25,8 @@ public class Ad {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
-    private String adType;
+//    @Column(nullable = false)
+//    private String adType;
 
     @Column(nullable = false)
     private int views;

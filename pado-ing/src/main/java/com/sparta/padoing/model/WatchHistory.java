@@ -28,14 +28,19 @@ public class WatchHistory {
     private Video video;
 
     @Column(nullable = false)
-    private int watchDuration;
+    private int watchDuration; // duration in seconds
 
     @Column(nullable = false)
     private LocalDateTime lastWatchedAt;
 
     @Column(nullable = false)
-    private int lastWatchedPosition;
+    private int lastWatchedPosition; // position in seconds
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
