@@ -1,5 +1,6 @@
 package com.sparta.padoing.controller;
 
+import com.sparta.padoing.dto.VideoResponseDto;
 import com.sparta.padoing.dto.response.ResponseDto;
 import com.sparta.padoing.model.User;
 import com.sparta.padoing.model.Video;
@@ -42,7 +43,7 @@ public class VideoController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseDto<Video>> createVideo(@RequestBody Video video) {
+    public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not authenticated"));
@@ -57,8 +58,9 @@ public class VideoController {
             User user = userOptional.get();
             video.setUser(user);
             video.setUploadDate(LocalDateTime.now());
-            ResponseDto<Video> response = videoService.save(video);
-            return ResponseEntity.status(201).body(response);
+            Video savedVideo = videoService.save(video).getData();
+            VideoResponseDto videoResponseDto = new VideoResponseDto(savedVideo);
+            return ResponseEntity.status(201).body(new ResponseDto<>("SUCCESS", videoResponseDto, "Video saved successfully"));
         } else {
             return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
         }
