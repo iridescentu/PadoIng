@@ -43,6 +43,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
@@ -53,9 +55,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println(oAuth2User);
+        System.out.println("OAuth2User: " + oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
@@ -65,38 +66,48 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         User existData = userRepository.findByUsername(username);
 
         if (existData == null) {
-
             User user = new User();
             user.setUsername(username);
             user.setEmail(oAuth2Response.getEmail());
             user.setName(oAuth2Response.getName());
             user.setRole(Role.USER);
-
             userRepository.save(user);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(Role.USER);
-
-            return new CustomOAuth2User(userDTO);
-        }
-        else {
+        } else {
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
-
             userRepository.save(existData);
+        }
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(existData.getUsername());
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(existData.getRole());
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
+        userDTO.setName(oAuth2Response.getName());
+        userDTO.setRole(Role.USER);
 
-            return new CustomOAuth2User(userDTO);
+        return new CustomOAuth2User(userDTO);
+    }
+
+    public User saveOrUpdateUser(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+
+        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        User existData = userRepository.findByUsername(username);
+
+        if (existData == null) {
+            User user = new User();
+            user.setUsername(username);
+            user.setEmail(oAuth2Response.getEmail());
+            user.setName(oAuth2Response.getName());
+            user.setRole(Role.USER);
+            return userRepository.save(user);
+        } else {
+            existData.setEmail(oAuth2Response.getEmail());
+            existData.setName(oAuth2Response.getName());
+            return userRepository.save(existData);
         }
     }
 }

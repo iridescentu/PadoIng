@@ -17,38 +17,4 @@ public class MainController {
         return "main route";
     }
 
-    @GetMapping("/loginTest")
-    @ResponseBody
-    public String loginAPI() {
-        return "login route";
-    }
-
-    @PostMapping("/logout")
-    @ResponseBody
-    public String logoutAPI(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Authorization")) {
-                    cookie.setValue(null);
-                    cookie.setMaxAge(0);
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
-                }
-                if (cookie.getName().equals("JSESSIONID")) {
-                    cookie.setValue(null);
-                    cookie.setMaxAge(0);
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
-                }
-                if (cookie.getName().equals("__Host-GAPS")) {
-                    cookie.setValue(null);
-                    cookie.setMaxAge(0);
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
-                }
-            }
-        }
-        return "logout successful";
-    }
 }
