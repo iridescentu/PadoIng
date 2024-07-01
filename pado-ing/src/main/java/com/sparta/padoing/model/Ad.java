@@ -28,12 +28,17 @@ public class Ad {
 //    @Column(nullable = false)
 //    private String adType;
 
-    @Column(nullable = false)
-    private int views;
+//    @Column(nullable = false)
+//    private int views;
 
     @Column(nullable = false)
     private int duration;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
