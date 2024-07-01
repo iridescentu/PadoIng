@@ -1,10 +1,11 @@
-// User가 여러 권한을 가질 수 있도록 수정
 package com.sparta.padoing.dto.response;
 
+import com.sparta.padoing.model.Ad;
 import com.sparta.padoing.model.Video;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class VideoResponseDto {
@@ -15,6 +16,7 @@ public class VideoResponseDto {
     private int duration;
     private Long id;
     private String userName;
+    private List<Ad> ads; // 광고 목록 추가
 
     public VideoResponseDto(Video video) {
         this.title = video.getTitle();
@@ -24,5 +26,10 @@ public class VideoResponseDto {
         this.duration = video.getDuration();
         this.id = video.getId();
         this.userName = video.getUser().getName();
+    }
+
+    public VideoResponseDto(Video video, List<Ad> ads) {
+        this(video); // 기존 생성자를 호출하여 공통 필드를 초기화합니다.
+        this.ads = ads;
     }
 }

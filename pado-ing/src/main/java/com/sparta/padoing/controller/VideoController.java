@@ -2,11 +2,9 @@ package com.sparta.padoing.controller;
 
 import com.sparta.padoing.dto.response.ResponseDto;
 import com.sparta.padoing.dto.response.VideoResponseDto;
-import com.sparta.padoing.model.Role;
-import com.sparta.padoing.model.User;
-import com.sparta.padoing.model.Video;
-import com.sparta.padoing.model.WatchHistory;
+import com.sparta.padoing.model.*;
 import com.sparta.padoing.service.UserService;
+import com.sparta.padoing.service.VideoAdService;
 import com.sparta.padoing.service.VideoService;
 import com.sparta.padoing.service.WatchHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,9 @@ public class VideoController {
 
     @Autowired
     private WatchHistoryService watchHistoryService; // 시청 기록 서비스 추가
+
+    @Autowired
+    private VideoAdService videoAdService;
 
     @GetMapping
     public ResponseEntity<ResponseDto<List<VideoResponseDto>>> getAllVideos() {
@@ -113,6 +114,28 @@ public class VideoController {
             }
         } else {
             return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
+        }
+    }
+
+    @GetMapping("/play/{id}")
+    public ResponseEntity<ResponseDto<VideoResponseDto>> playVideo(@PathVariable Long id) {
+        ResponseDto<Optional<Video>> response = videoService.findById(id);
+        if (response.getResultCode().equals("SUCCESS") && response.getData().isPresent()) {
+            Video video = response.getData().get();
+
+            // 광고 목록을 가져옵니다.
+            ResponseDto<List<VideoAd>> adResponse = videoAdService.findByVideo(video);
+            if (!adResponse.getResultCode().equals("SUCCESS")) {
+                return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Ads not found"));
+            }
+            List<Ad> ads = adResponse.getData().stream()
+                    .map(VideoAd::getAd)
+                    .collect(Collectors.toList());
+
+            VideoResponseDto videoResponseDto = new VideoResponseDto(video, ads);
+            return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDto, "Video with ads retrieved successfully"));
+        } else {
+            return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Video not found"));
         }
     }
 }
