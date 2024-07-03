@@ -28,13 +28,13 @@ public class WatchHistory {
     private Video video;
 
     @Column(nullable = false)
-    private int watchDuration; // duration in seconds
+    private int watchDuration; // 시청 시간 (초 단위)
 
     @Column(nullable = false)
     private LocalDateTime lastWatchedAt;
 
     @Column(nullable = false)
-    private int lastWatchedPosition; // position in seconds
+    private int lastWatchedPosition; // 마지막 시청 위치 (초 단위)
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
