@@ -18,6 +18,7 @@ public class VideoAdServiceImpl implements VideoAdService {
 
     @Override
     public ResponseDto<List<VideoAd>> findByVideo(Video video) {
+        // 동영상에 연결된 광고 목록 조회
         List<VideoAd> videoAds = videoAdRepository.findByVideo(video);
         if (!videoAds.isEmpty()) {
             return new ResponseDto<>("SUCCESS", videoAds, "Ads retrieved successfully");
