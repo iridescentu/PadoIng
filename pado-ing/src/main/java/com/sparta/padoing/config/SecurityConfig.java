@@ -172,19 +172,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // csrf disable
+        // CSRF 비활성화
         http.csrf(csrf -> csrf.disable());
 
-        // From 로그인 방식 disable
+        // From 로그인 방식 비활성화
         http.formLogin(form -> form.disable());
 
-        // HTTP Basic 인증 방식 disable
+        // HTTP Basic 인증 방식 비활성화
         http.httpBasic(httpBasic -> httpBasic.disable());
 
         // JWTFilter 추가
         http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        // oauth2
+        // OAuth2 로그인 설정
         http.oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                         .userService(customOAuth2UserService))
@@ -193,7 +193,7 @@ public class SecurityConfig {
 
         // 경로별 인가 작업
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/videos", "/api/videos/{id}", "/api/auth/oauth2/callback").permitAll() // GET 요청 및 특정 경로에 대해 허용
+                .requestMatchers("/", "/api/videos", "/api/videos/{id}", "/api/auth/oauth2/code").permitAll() // GET 요청 및 특정 경로에 대해 허용
                 .requestMatchers("/api/videos/**").authenticated() // POST, PUT, DELETE 요청에 대해 인증 요구
                 .anyRequest().authenticated()
         );
