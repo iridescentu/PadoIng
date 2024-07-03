@@ -17,12 +17,14 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public ResponseDto<Ad> save(Ad ad) {
+        // 광고 저장
         Ad savedAd = adRepository.save(ad);
         return new ResponseDto<>("SUCCESS", savedAd, "Ad saved successfully");
     }
 
     @Override
     public ResponseDto<Ad> findById(Long id) {
+        // 광고 ID로 광고 조회
         Optional<Ad> ad = adRepository.findById(id);
         if (ad.isPresent()) {
             return new ResponseDto<>("SUCCESS", ad.get(), "Ad retrieved successfully");
