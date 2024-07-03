@@ -125,25 +125,26 @@ public class VideoController {
     }
 
     // 동영상 세부 정보 조회 (현재 동영상에 연결된 광고 목록까지 조회 가능)
-    @GetMapping("/play/{id}")
-    public ResponseEntity<ResponseDto<VideoResponseDto>> playVideo(@PathVariable Long id) {
-        ResponseDto<Optional<Video>> response = videoService.findById(id);
-        if (response.getResultCode().equals("SUCCESS") && response.getData().isPresent()) {
-            Video video = response.getData().get();
-
-            // 광고 목록을 가져옵니다.
-            ResponseDto<List<VideoAd>> adResponse = videoAdService.findByVideo(video);
-            if (!adResponse.getResultCode().equals("SUCCESS")) {
-                return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Ads not found"));
-            }
-            List<Ad> ads = adResponse.getData().stream()
-                    .map(VideoAd::getAd)
-                    .collect(Collectors.toList());
-
-            VideoResponseDto videoResponseDto = new VideoResponseDto(video, ads);
-            return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDto, "Video with ads retrieved successfully"));
-        } else {
-            return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Video not found"));
-        }
-    }
+//    @GetMapping("/play/{id}")
+//    public ResponseEntity<ResponseDto<VideoResponseDto>> playVideo(@PathVariable Long id) {
+//        // 비디오 정보 조회
+//        ResponseDto<Optional<Video>> response = videoService.findById(id);
+//        if (response.getResultCode().equals("SUCCESS") && response.getData().isPresent()) {
+//            Video video = response.getData().get();
+//
+//            // 광고 목록을 가져옵니다.
+//            ResponseDto<List<VideoAd>> adResponse = videoAdService.findByVideo(video);
+//            if (!adResponse.getResultCode().equals("SUCCESS")) {
+//                return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Ads not found"));
+//            }
+//            List<Ad> ads = adResponse.getData().stream()
+//                    .map(VideoAd::getAd)
+//                    .collect(Collectors.toList());
+//
+//            VideoResponseDto videoResponseDto = new VideoResponseDto(video, ads);
+//            return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDto, "Video with ads retrieved successfully"));
+//        } else {
+//            return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Video not found"));
+//        }
+//    }
 }
