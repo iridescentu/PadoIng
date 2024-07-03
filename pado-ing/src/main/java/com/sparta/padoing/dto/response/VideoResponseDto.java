@@ -29,7 +29,7 @@ public class VideoResponseDto {
     }
 
     public VideoResponseDto(Video video, List<Ad> ads) {
-        this(video); // 기존 생성자를 호출하여 공통 필드를 초기화합니다.
+        this(video); // 기존 생성자를 호출하여 공통 필드를 초기화
         this.ads = ads;
     }
 }
