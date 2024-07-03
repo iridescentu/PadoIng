@@ -76,6 +76,8 @@ public class VideoController {
 
             // 동영상을 업로드하면 UPLOADER 역할 부여
             user.addRole(Role.UPLOADER);
+
+            // UPLOADER 역할 부여 뒤 User 정보 업데이트
             userService.saveOrUpdateUser(user);
 
             Video savedVideo = videoService.save(video).getData();
