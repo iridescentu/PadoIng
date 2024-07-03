@@ -14,6 +14,7 @@ public class AdController {
     @Autowired
     private AdService adService;
 
+    // 광고 생성
     @PostMapping
     public ResponseEntity<ResponseDto<Ad>> createAd(@RequestBody Ad ad) {
         ResponseDto<Ad> response = adService.save(ad);
@@ -24,6 +25,7 @@ public class AdController {
         }
     }
 
+    // 광고 ID로 광고 조회
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<Ad>> getAdById(@PathVariable Long id) {
         ResponseDto<Ad> response = adService.findById(id);
