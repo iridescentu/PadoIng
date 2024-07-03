@@ -57,7 +57,38 @@ public class VideoController {
         }
     }
 
-    // 동영상 업로드
+//    // 동영상 업로드
+//    @PostMapping("/upload")
+//    public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not authenticated"));
+//        }
+//
+//        String username = authentication.getName();
+//        System.out.println("Authenticated username: " + username);
+//
+//        Optional<User> userOptional = userService.findByUsername(username);
+//
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            video.setUser(user);
+//            video.setUploadDate(LocalDateTime.now());
+//
+//            // 동영상을 업로드하면 UPLOADER 역할 부여
+//            user.addRole(Role.UPLOADER);
+//
+//            // UPLOADER 역할 부여 뒤 User 정보 업데이트
+//            userService.saveOrUpdateUser(user);
+//
+//            Video savedVideo = videoService.save(video).getData();
+//            VideoResponseDto videoResponseDto = new VideoResponseDto(savedVideo);
+//            return ResponseEntity.status(201).body(new ResponseDto<>("SUCCESS", videoResponseDto, "Video saved successfully"));
+//        } else {
+//            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
+//        }
+//    }
+
     @PostMapping("/upload")
     public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -82,7 +113,12 @@ public class VideoController {
             userService.saveOrUpdateUser(user);
 
             Video savedVideo = videoService.save(video).getData();
-            VideoResponseDto videoResponseDto = new VideoResponseDto(savedVideo);
+
+            // 광고 목록을 가져와 VideoResponseDto에 포함
+            List<VideoAd> videoAds = videoService.findVideoAdsByVideo(savedVideo);
+            List<Ad> ads = videoAds.stream().map(VideoAd::getAd).collect(Collectors.toList());
+
+            VideoResponseDto videoResponseDto = new VideoResponseDto(savedVideo, ads);
             return ResponseEntity.status(201).body(new ResponseDto<>("SUCCESS", videoResponseDto, "Video saved successfully"));
         } else {
             return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
