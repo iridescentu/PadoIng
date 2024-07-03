@@ -34,6 +34,7 @@ public class VideoController {
     @Autowired
     private VideoAdService videoAdService;
 
+    // 모든 동영상 조회
     @GetMapping
     public ResponseEntity<ResponseDto<List<VideoResponseDto>>> getAllVideos() {
         ResponseDto<List<Video>> response = videoService.findAll();
@@ -43,6 +44,7 @@ public class VideoController {
         return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDtoList, "All videos retrieved successfully"));
     }
 
+    // 동영상 ID로 동영상 조회
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<VideoResponseDto>> getVideoById(@PathVariable Long id) {
         ResponseDto<Optional<Video>> response = videoService.findById(id);
@@ -54,6 +56,7 @@ public class VideoController {
         }
     }
 
+    // 동영상 업로드
     @PostMapping("/upload")
     public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -71,7 +74,7 @@ public class VideoController {
             video.setUser(user);
             video.setUploadDate(LocalDateTime.now());
 
-            // Add UPLOADER role to the user
+            // 동영상을 업로드하면 UPLOADER 역할 부여
             user.addRole(Role.UPLOADER);
             userService.saveOrUpdateUser(user);
 
@@ -83,6 +86,7 @@ public class VideoController {
         }
     }
 
+    // 동영상 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteVideo(@PathVariable Long id) {
         ResponseDto<Void> response = videoService.deleteById(id);
@@ -93,6 +97,7 @@ public class VideoController {
         }
     }
 
+    // 시청 기록 업데이트
     @PostMapping("/watch/{id}")
     public ResponseEntity<ResponseDto<WatchHistory>> updateWatchHistory(@PathVariable Long id, @RequestBody WatchHistory watchHistory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -117,6 +122,7 @@ public class VideoController {
         }
     }
 
+    // 동영상 재생
     @GetMapping("/play/{id}")
     public ResponseEntity<ResponseDto<VideoResponseDto>> playVideo(@PathVariable Long id) {
         ResponseDto<Optional<Video>> response = videoService.findById(id);

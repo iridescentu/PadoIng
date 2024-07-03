@@ -15,12 +15,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 로그인
     @GetMapping("/login")
     @ResponseBody
     public String loginAPI() {
         return "login route";
     }
 
+    // 로그아웃
     @PostMapping("/logout")
     @ResponseBody
     public String logoutAPI(HttpServletRequest request, HttpServletResponse response) {
