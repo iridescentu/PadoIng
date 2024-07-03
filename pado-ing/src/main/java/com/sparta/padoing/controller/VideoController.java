@@ -38,56 +38,27 @@ public class VideoController {
     // 모든 동영상 조회
     @GetMapping
     public ResponseEntity<ResponseDto<List<VideoResponseDto>>> getAllVideos() {
-        ResponseDto<List<Video>> response = videoService.findAll();
-        List<VideoResponseDto> videoResponseDtoList = response.getData().stream()
-                .map(VideoResponseDto::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDtoList, "All videos retrieved successfully"));
+        ResponseDto<List<VideoResponseDto>> response = videoService.findAll();
+        return ResponseEntity.ok(response);
     }
 
     // 동영상 ID로 동영상 조회
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<VideoResponseDto>> getVideoById(@PathVariable Long id) {
-        ResponseDto<Optional<Video>> response = videoService.findById(id);
+        ResponseDto<Optional<VideoResponseDto>> response = videoService.findById(id);
         if (response.getResultCode().equals("SUCCESS") && response.getData().isPresent()) {
-            VideoResponseDto videoResponseDto = new VideoResponseDto(response.getData().get());
-            return ResponseEntity.ok(new ResponseDto<>("SUCCESS", videoResponseDto, "Video retrieved successfully"));
+            return ResponseEntity.ok(new ResponseDto<>("SUCCESS", response.getData().get(), "Video retrieved successfully"));
         } else {
             return ResponseEntity.status(404).body(new ResponseDto<>("ERROR", null, "Video not found"));
         }
     }
 
-//    // 동영상 업로드
-//    @PostMapping("/upload")
-//    public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not authenticated"));
-//        }
-//
-//        String username = authentication.getName();
-//        System.out.println("Authenticated username: " + username);
-//
-//        Optional<User> userOptional = userService.findByUsername(username);
-//
-//        if (userOptional.isPresent()) {
-//            User user = userOptional.get();
-//            video.setUser(user);
-//            video.setUploadDate(LocalDateTime.now());
-//
-//            // 동영상을 업로드하면 UPLOADER 역할 부여
-//            user.addRole(Role.UPLOADER);
-//
-//            // UPLOADER 역할 부여 뒤 User 정보 업데이트
-//            userService.saveOrUpdateUser(user);
-//
-//            Video savedVideo = videoService.save(video).getData();
-//            VideoResponseDto videoResponseDto = new VideoResponseDto(savedVideo);
-//            return ResponseEntity.status(201).body(new ResponseDto<>("SUCCESS", videoResponseDto, "Video saved successfully"));
-//        } else {
-//            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
-//        }
-//    }
+    // 활성 상태의 동영상 조회
+    @GetMapping("/active")
+    public ResponseEntity<ResponseDto<List<VideoResponseDto>>> getActiveVideos() {
+        ResponseDto<List<VideoResponseDto>> response = videoService.findActiveVideos();
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseDto<VideoResponseDto>> createVideo(@RequestBody Video video) {
@@ -105,6 +76,7 @@ public class VideoController {
             User user = userOptional.get();
             video.setUser(user);
             video.setUploadDate(LocalDateTime.now());
+            video.setActive(true); // 기본값 설정
 
             // 동영상을 업로드하면 UPLOADER 역할 부여
             user.addRole(Role.UPLOADER);
@@ -128,11 +100,22 @@ public class VideoController {
     // 동영상 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteVideo(@PathVariable Long id) {
-        ResponseDto<Void> response = videoService.deleteById(id);
-        if ("SUCCESS".equals(response.getResultCode())) {
-            return ResponseEntity.ok(response);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not authenticated"));
+        }
+
+        String username = authentication.getName();
+        Optional<User> userOptional = userService.findByUsername(username);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            ResponseDto<Void> response = videoService.deleteByIdAndUser(id, user);
+            return response.getResultCode().equals("SUCCESS")
+                    ? ResponseEntity.ok(response)
+                    : ResponseEntity.status(404).body(response);
         } else {
-            return ResponseEntity.status(404).body(response);
+            return ResponseEntity.status(403).body(new ResponseDto<>("ERROR", null, "User not found"));
         }
     }
 

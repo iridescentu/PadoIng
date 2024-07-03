@@ -50,6 +50,7 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
 
             incrementAdViews(video, user, lastWatchedPosition);
 
+            // 삭제된 동영상일 경우
             WatchHistoryResponseDto watchHistoryResponseDto = new WatchHistoryResponseDto(watchHistory);
             return new ResponseDto<>("SUCCESS", watchHistoryResponseDto, "Watch history updated successfully");
         } else {
@@ -58,13 +59,17 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
     }
 
     private void incrementAdViews(Video video, User currentUser, int lastWatchedPosition) {
+        // 광고 시청 횟수 증가
         List<VideoAd> videoAds = videoAdRepository.findByVideo(video);
         int adInterval = 5 * 60; // 5분 간격
 
         for (VideoAd videoAd : videoAds) {
+            // 광고가 삽입된 위치 계산
             int adPosition = adInterval * videoAd.getId().intValue();
 
+            // 광고가 삽입된 위치가 lastWatchedPosition보다 작거나 같으면 시청된 것으로 간주
             if (lastWatchedPosition >= adPosition) {
+                // 현재 사용자가 비디오를 올린 사용자가 아닌 경우
                 if (!video.getUser().getId().equals(currentUser.getId())) {
                     videoAd.setViews(videoAd.getViews() + 1);
                     videoAdRepository.save(videoAd);

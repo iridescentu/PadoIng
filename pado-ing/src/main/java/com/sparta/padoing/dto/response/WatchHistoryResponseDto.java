@@ -24,10 +24,10 @@ public class WatchHistoryResponseDto {
     public WatchHistoryResponseDto(WatchHistory watchHistory) {
         Video video = watchHistory.getVideo();
         this.videoId = video.getId();
-        this.videoTitle = video.getTitle();
-        this.videoDescription = video.getDescription();
+        this.videoTitle = video.isDeleted() ? "삭제된 동영상입니다" : video.getTitle();
+        this.videoDescription = video.isDeleted() ? "" : video.getDescription();
         this.videoViews = video.getViews();
-        this.videoUploadDate = video.getUploadDate().format(DATE_TIME_FORMATTER);
+        this.videoUploadDate = video.isDeleted() ? "" : video.getUploadDate().format(DATE_TIME_FORMATTER);
         this.videoDuration = formatDuration(video.getDuration());
         this.uploaderName = video.getUser().getName();
         this.watchDuration = formatDuration(watchHistory.getWatchDuration());

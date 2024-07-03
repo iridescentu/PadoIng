@@ -37,4 +37,10 @@ public class Video {
 
     @Column(nullable = false)
     private int duration;
+
+    @Column(nullable = false)
+    private boolean isActive = true; // 동영상 업로드할 때 isActive의 기본값을 true로 설정
+
+    @Column(nullable = false)
+    private boolean isDeleted = false; // 소프트 삭제 필드 추가
 }
