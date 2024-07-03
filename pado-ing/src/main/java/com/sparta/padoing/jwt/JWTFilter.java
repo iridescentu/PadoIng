@@ -26,12 +26,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // OAuth2 인증 경로는 필터링하지 않음
         String path = request.getRequestURI();
         return path.startsWith("/oauth2/authorization/google");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 쿠키에서 Authorization 토큰을 가져옴
         String authorization = null;
         Cookie[] cookies = request.getCookies();
 
@@ -44,6 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
+        // 토큰이 없으면 필터링 통과
         if (authorization == null) {
             System.out.println("Token is null");
             filterChain.doFilter(request, response);
@@ -53,17 +56,20 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = authorization;
         System.out.println("Token: " + token);
 
+        // 토큰이 만료되었으면 필터링 통과
         if (jwtUtil.isExpired(token)) {
             System.out.println("Token is expired");
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 토큰에서 사용자명과 역할을 가져옴
         String username = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
         System.out.println("Username from token: " + username);
         System.out.println("Role from token: " + role);
 
+        // 사용자 정보를 설정하고 SecurityContext에 저장
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(username);
         userDTO.setRoles(Collections.singleton(Role.valueOf(role)));
