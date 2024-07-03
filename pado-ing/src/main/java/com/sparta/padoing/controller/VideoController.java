@@ -99,7 +99,7 @@ public class VideoController {
         }
     }
 
-    // 시청 기록 업데이트
+    // 동영상 재생 & 중단 (시청 기록 업데이트)
     @PostMapping("/watch/{id}")
     public ResponseEntity<ResponseDto<WatchHistory>> updateWatchHistory(@PathVariable Long id, @RequestBody WatchHistory watchHistory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -124,7 +124,7 @@ public class VideoController {
         }
     }
 
-    // 동영상 재생
+    // 동영상 세부 정보 조회 (현재 동영상에 연결된 광고 목록까지 조회 가능)
     @GetMapping("/play/{id}")
     public ResponseEntity<ResponseDto<VideoResponseDto>> playVideo(@PathVariable Long id) {
         ResponseDto<Optional<Video>> response = videoService.findById(id);
