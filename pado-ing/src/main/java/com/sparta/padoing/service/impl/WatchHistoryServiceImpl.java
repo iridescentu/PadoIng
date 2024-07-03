@@ -30,6 +30,7 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
 
     @Override
     public ResponseDto<WatchHistory> updateWatchHistory(User user, Long videoId, int watchDuration, int lastWatchedPosition) {
+        // 시청 기록 업데이트
         Optional<Video> videoOpt = videoRepository.findById(videoId);
         if (videoOpt.isPresent()) {
             Video video = videoOpt.get();
@@ -57,6 +58,7 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
     }
 
     private void incrementAdViews(Video video, User currentUser, int lastWatchedPosition) {
+        // 광고 시청 횟수 증가
         List<VideoAd> videoAds = videoAdRepository.findByVideo(video);
         int adInterval = 5 * 60; // 5분 간격
 
