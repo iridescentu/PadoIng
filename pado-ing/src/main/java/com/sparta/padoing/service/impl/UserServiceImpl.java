@@ -20,12 +20,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findByUsername(String username) {
+        // 사용자 이름으로 사용자 조회
         System.out.println("Searching for user by username: " + username);
         return userRepository.findByUsername(username);
     }
 
     @Override
     public User saveOrUpdateUser(User user) {
+        // 사용자 저장 또는 업데이트
         System.out.println("Saving user: " + user);
         return userRepository.save(user);
     }
