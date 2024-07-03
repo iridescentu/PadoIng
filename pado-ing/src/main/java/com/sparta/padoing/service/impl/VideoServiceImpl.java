@@ -25,12 +25,14 @@ public class VideoServiceImpl implements VideoService {
     @Autowired
     private AdRepository adRepository;
 
+    // 모든 비디오 조회
     @Override
     public ResponseDto<List<Video>> findAll() {
         List<Video> videos = videoRepository.findAll();
         return new ResponseDto<>("SUCCESS", videos, "All videos retrieved successfully");
     }
 
+    // 비디오 ID로 비디오 조회
     @Override
     public ResponseDto<Optional<Video>> findById(Long id) {
         Optional<Video> video = videoRepository.findById(id);
@@ -43,6 +45,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public ResponseDto<Video> save(Video video) {
+        // 비디오 저장
         Video savedVideo = videoRepository.save(video);
 
         // 광고 삽입 로직
@@ -51,6 +54,7 @@ public class VideoServiceImpl implements VideoService {
         return new ResponseDto<>("SUCCESS", savedVideo, "Video saved successfully");
     }
 
+    // 비디오 ID로 비디오 삭제
     @Override
     public ResponseDto<Void> deleteById(Long id) {
         if (videoRepository.existsById(id)) {
@@ -61,11 +65,14 @@ public class VideoServiceImpl implements VideoService {
         }
     }
 
+    // 조회수 증가
     @Override
     public void incrementViews(Long videoId, User currentUser) {
         Optional<Video> videoOpt = videoRepository.findById(videoId);
         if (videoOpt.isPresent()) {
             Video video = videoOpt.get();
+
+            // 어뷰징 방지
             if (!video.getUser().getId().equals(currentUser.getId())) {
                 video.setViews(video.getViews() + 1);
                 videoRepository.save(video);
@@ -73,6 +80,7 @@ public class VideoServiceImpl implements VideoService {
         }
     }
 
+    // 광고 삽입 로직
     @Override
     public void insertAds(Video video) {
         int videoDuration = video.getDuration();
@@ -93,6 +101,7 @@ public class VideoServiceImpl implements VideoService {
         }
     }
 
+    // 비디오에 연결된 광고 목록 조회
     @Override
     public List<VideoAd> findVideoAdsByVideo(Video video) {
         return videoAdRepository.findByVideo(video);
