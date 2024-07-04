@@ -27,16 +27,16 @@ public class WatchHistory {
     @JoinColumn(name = "video_id", nullable = false)
     private Video video;
 
-    @Column(nullable = false)
+    @Column(name = "watch_duration", nullable = false)
     private int watchDuration; // 시청 시간 (초 단위)
 
-    @Column(nullable = false)
+    @Column(name= "last_watched_at", nullable = false)
     private LocalDateTime lastWatchedAt;
 
-    @Column(nullable = false)
+    @Column(name = "last_watched_position", nullable = false)
     private int lastWatchedPosition; // 마지막 시청 위치 (초 단위)
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

@@ -34,7 +34,7 @@ public class Ad {
     @Column(nullable = false)
     private int duration;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
