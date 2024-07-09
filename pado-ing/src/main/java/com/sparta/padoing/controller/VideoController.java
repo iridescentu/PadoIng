@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -75,7 +75,7 @@ public class VideoController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             video.setUser(user);
-            video.setUploadDate(LocalDateTime.now());
+            video.setUploadDate(LocalDate.now());
             video.setActive(true); // 기본값 설정
 
             // 동영상을 업로드하면 UPLOADER 역할 부여

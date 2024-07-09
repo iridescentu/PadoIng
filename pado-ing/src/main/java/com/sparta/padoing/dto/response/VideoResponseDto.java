@@ -4,7 +4,7 @@ import com.sparta.padoing.model.Ad;
 import com.sparta.padoing.model.Video;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class VideoResponseDto {
         this.ads = ads;
     }
 
-    private String formatDate(LocalDateTime dateTime) {
+    private String formatDate(LocalDate dateTime) {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 

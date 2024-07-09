@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -33,7 +33,7 @@ public class Video {
     private int views;
 
     @Column(name = "upload_date", nullable = false)
-    private LocalDateTime uploadDate;
+    private LocalDate uploadDate;
 
     @Column(nullable = false)
     private int duration;
