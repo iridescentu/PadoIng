@@ -20,7 +20,7 @@ public class VideoResponseDto {
     private boolean isActive; // 활성 상태 추가
     private List<Ad> ads; // 광고 목록 추가
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
     public VideoResponseDto(Video video) {
         this.title = video.getTitle();
