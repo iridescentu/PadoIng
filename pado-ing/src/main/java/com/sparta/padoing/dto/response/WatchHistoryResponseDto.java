@@ -4,6 +4,7 @@ import com.sparta.padoing.model.Video;
 import com.sparta.padoing.model.WatchHistory;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -18,7 +19,7 @@ public class WatchHistoryResponseDto {
     private String watchDuration; // 포맷된 시간으로 변경
     private String lastWatchedPosition; // 포맷된 시간으로 변경
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
     public WatchHistoryResponseDto(WatchHistory watchHistory) {
         Video video = watchHistory.getVideo();
@@ -26,11 +27,15 @@ public class WatchHistoryResponseDto {
         this.videoTitle = video.isDeleted() ? "삭제된 동영상입니다" : video.getTitle();
         this.videoDescription = video.isDeleted() ? "" : video.getDescription();
         this.videoViews = video.getViews();
-        this.videoUploadDate = video.isDeleted() ? "" : video.getUploadDate().format(DATE_TIME_FORMATTER);
+        this.videoUploadDate = video.isDeleted() ? "" : formatDate(video.getUploadDate());
         this.videoDuration = formatDuration(video.getDuration());
         this.uploaderName = video.getUser().getName();
         this.watchDuration = formatDuration(watchHistory.getWatchDuration());
         this.lastWatchedPosition = formatDuration(watchHistory.getLastWatchedPosition());
+    }
+
+    private String formatDate(LocalDate date) {
+        return date.format(DATE_TIME_FORMATTER);
     }
 
     private String formatDuration(int seconds) {
