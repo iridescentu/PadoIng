@@ -17,7 +17,6 @@ public class WatchHistoryResponseDto {
     private String uploaderName;
     private String watchDuration; // 포맷된 시간으로 변경
     private String lastWatchedPosition; // 포맷된 시간으로 변경
-    private String lastWatchedAt; // 포맷된 날짜로 변경
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
 
@@ -32,7 +31,6 @@ public class WatchHistoryResponseDto {
         this.uploaderName = video.getUser().getName();
         this.watchDuration = formatDuration(watchHistory.getWatchDuration());
         this.lastWatchedPosition = formatDuration(watchHistory.getLastWatchedPosition());
-        this.lastWatchedAt = watchHistory.getLastWatchedAt().format(DATE_TIME_FORMATTER);
     }
 
     private String formatDuration(int seconds) {

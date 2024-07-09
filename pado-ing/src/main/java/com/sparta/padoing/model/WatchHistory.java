@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,17 +31,14 @@ public class WatchHistory {
     @Column(name = "watch_duration", nullable = false)
     private int watchDuration; // 시청 시간 (초 단위)
 
-    @Column(name= "last_watched_at", nullable = false)
-    private LocalDateTime lastWatchedAt;
-
     @Column(name = "last_watched_position", nullable = false)
     private int lastWatchedPosition; // 마지막 시청 위치 (초 단위)
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
 }
