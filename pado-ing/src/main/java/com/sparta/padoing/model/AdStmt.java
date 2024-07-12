@@ -19,13 +19,11 @@ import java.time.LocalDate;
 public class AdStmt {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
     @JoinColumn(name = "video_ad_id")
     private VideoAd videoAd;
 
+    @Id
     @Column(name = "date", updatable = false)
     private LocalDate date;
 

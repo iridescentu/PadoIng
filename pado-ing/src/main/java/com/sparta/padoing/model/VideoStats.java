@@ -25,6 +25,7 @@ public class VideoStats {
 
     @Id
     @Column(name = "date", updatable = false)
+    @CreatedDate
     private LocalDate date;
 
     @Column(name = "video_view")
@@ -40,5 +41,13 @@ public class VideoStats {
                 .videoView(videoView)
                 .playTime(playTime)
                 .build();
+    }
+
+    public void setVideoView(int videoView) {
+        this.videoView = videoView;
+    }
+
+    public void setPlayTime(long playTime) {
+        this.playTime = playTime;
     }
 }

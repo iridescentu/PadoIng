@@ -17,8 +17,8 @@ public class AdStmtServiceImpl implements AdStmtService {
     private AdStmtRepository adStmtRepository;
 
     @Override
-    public ResponseDto<List<AdStmt>> findByUserIdAndCreatedAtBetween(Long userId, LocalDate startDate, LocalDate endDate) {
-        List<AdStmt> adStmts = adStmtRepository.findByUser_IdAndCreatedAtBetween(userId, startDate, endDate);
+    public ResponseDto<List<AdStmt>> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
         return new ResponseDto<>("SUCCESS", adStmts, "Ad statements retrieved successfully");
     }
 }

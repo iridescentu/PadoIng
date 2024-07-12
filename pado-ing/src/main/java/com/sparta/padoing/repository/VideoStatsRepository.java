@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VideoStatsRepository extends JpaRepository<VideoStats, VideoStatsId> {
-    List<VideoStats> findTop5ByVideo_User_IdAndCreatedAtBetweenOrderByDailyViewCountDesc(Long userId, LocalDate startDate, LocalDate endDate);
-    List<VideoStats> findTop5ByVideo_User_IdAndCreatedAtBetweenOrderByDailyPlayTimeDesc(Long userId, LocalDate startDate, LocalDate endDate);
+    List<VideoStats> findTop5ByVideo_User_IdAndDateBetweenOrderByVideoViewDesc(Long userId, LocalDate startDate, LocalDate endDate);
+    Optional<VideoStats> findByVideo_IdAndDate(Long videoId, LocalDate date);
 }

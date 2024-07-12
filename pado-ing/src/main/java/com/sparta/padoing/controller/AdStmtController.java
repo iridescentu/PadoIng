@@ -20,6 +20,6 @@ public class AdStmtController {
     public ResponseDto<List<AdStmt>> getAdStmts(@RequestParam Long userId,
                                                 @RequestParam LocalDate startDate,
                                                 @RequestParam LocalDate endDate) {
-        return adStmtService.findByUserIdAndCreatedAtBetween(userId, startDate, endDate);
+        return adStmtService.findByUserIdAndDateBetween(userId, startDate, endDate);
     }
 }

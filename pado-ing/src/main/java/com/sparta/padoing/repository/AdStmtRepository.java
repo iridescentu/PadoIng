@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface AdStmtRepository extends JpaRepository<AdStmt, AdStmtId> {
-    List<AdStmt> findByUser_IdAndCreatedAtBetween(Long userId, LocalDate startDate, LocalDate endDate);
+    List<AdStmt> findByVideoAd_Video_User_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
 }

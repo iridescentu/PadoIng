@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AdStmtService {
-    ResponseDto<List<AdStmt>> findByUserIdAndCreatedAtBetween(Long userId, LocalDate startDate, LocalDate endDate);
+    ResponseDto<List<AdStmt>> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
 }
