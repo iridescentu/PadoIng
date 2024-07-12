@@ -12,5 +12,5 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class VideoStmtId implements Serializable {
     private Long video;
-    private LocalDate createdAt;
+    private LocalDate date;
 }

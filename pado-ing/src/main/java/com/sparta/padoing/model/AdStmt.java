@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "ad_stmt")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,33 +19,24 @@ import java.time.LocalDate;
 public class AdStmt {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne
-    @JoinColumn(name = "ad_id")
-    private Ad ad;
+    @JoinColumn(name = "video_ad_id")
+    private VideoAd videoAd;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "date", updatable = false)
+    private LocalDate date;
 
-    @Id
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDate createdAt;
+    @Column(name = "ad_stmt")
+    private int adStmt;
 
-    private int dailyViewCount;
-    private long dailyPlayTime;
-
-    private long totalEarnings;
-
-    public static AdStmt of(Ad ad, User user, int dailyViewCount, long dailyPlayTime, long totalEarnings) {
+    public static AdStmt of(VideoAd videoAd, int adStmt) {
         return AdStmt.builder()
-                .ad(ad)
-                .user(user)
-                .createdAt(LocalDate.now())
-                .dailyViewCount(dailyViewCount)
-                .dailyPlayTime(dailyPlayTime)
-                .totalEarnings(totalEarnings)
+                .videoAd(videoAd)
+                .date(LocalDate.now())
+                .adStmt(adStmt)
                 .build();
     }
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class AdStmtId implements Serializable {
-    private Long ad;
-    private Long user;
-    private LocalDate createdAt;
+    private Long videoAd;
+    private LocalDate date;
 }

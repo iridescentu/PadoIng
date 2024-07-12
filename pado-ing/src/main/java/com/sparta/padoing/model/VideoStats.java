@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "video_stats")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,19 +24,21 @@ public class VideoStats {
     private Video video;
 
     @Id
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDate createdAt;
+    @Column(name = "date", updatable = false)
+    private LocalDate date;
 
-    private int dailyViewCount;
-    private long dailyPlayTime;
+    @Column(name = "video_view")
+    private int videoView;
 
-    public static VideoStats of(Video video, int dailyViewCount, long dailyPlayTime) {
+    @Column(name = "play_time")
+    private long playTime;
+
+    public static VideoStats of(Video video, int videoView, long playTime) {
         return VideoStats.builder()
                 .video(video)
-                .createdAt(LocalDate.now())
-                .dailyViewCount(dailyViewCount)
-                .dailyPlayTime(dailyPlayTime)
+                .date(LocalDate.now())
+                .videoView(videoView)
+                .playTime(playTime)
                 .build();
     }
 }
