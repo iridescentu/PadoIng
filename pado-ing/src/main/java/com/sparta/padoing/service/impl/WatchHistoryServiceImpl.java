@@ -2,13 +2,13 @@ package com.sparta.padoing.service.impl;
 
 import com.sparta.padoing.dto.response.ResponseDto;
 import com.sparta.padoing.dto.response.WatchHistoryResponseDto;
-import com.sparta.padoing.model.User;
-import com.sparta.padoing.model.Video;
-import com.sparta.padoing.model.VideoAd;
-import com.sparta.padoing.model.WatchHistory;
+import com.sparta.padoing.model.*;
+import com.sparta.padoing.repository.AdHistoryRepository;
+import com.sparta.padoing.repository.AdStatsRepository;
 import com.sparta.padoing.repository.VideoAdRepository;
 import com.sparta.padoing.repository.VideoRepository;
 import com.sparta.padoing.repository.WatchHistoryRepository;
+import com.sparta.padoing.service.AdHistoryService;
 import com.sparta.padoing.service.WatchHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,12 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
 
     @Autowired
     private VideoAdRepository videoAdRepository;
+
+    @Autowired
+    private AdHistoryService adHistoryService;
+
+    @Autowired
+    private AdStatsRepository adStatsRepository;
 
     @Override
     public ResponseDto<WatchHistoryResponseDto> updateWatchHistory(User user, Long videoId, int watchDuration, int lastWatchedPosition) {
@@ -80,14 +86,25 @@ public class WatchHistoryServiceImpl implements WatchHistoryService {
                     videoAd.setViews(videoAd.getViews() + 1);
                     videoAdRepository.save(videoAd);
                     System.out.println("Ad view count incremented. New view count: " + videoAd.getViews());
+
+                    // AdHistory에 추가
+                    adHistoryService.createAdHistory(currentUser, videoAd);
+
+                    // AdStats 업데이트
+                    updateAdStats(videoAd, 1);
                 }
             }
         }
     }
 
-    private int getAdPosition(VideoAd videoAd) {
-        // 광고 삽입 위치 계산 로직
-        int adInterval = 5 * 60; // 5분 간격
-        return adInterval * (videoAd.getId().intValue() - 1);
+    private void updateAdStats(VideoAd videoAd, int viewCountIncrement) {
+        LocalDate today = LocalDate.now();
+        Optional<AdStats> adStatsOpt = adStatsRepository.findByVideoAd_IdAndDate(videoAd.getId(), today);
+
+        AdStats adStats = adStatsOpt.orElseGet(() -> AdStats.of(videoAd, 0));
+
+        adStats.setAdView(adStats.getAdView() + viewCountIncrement);
+
+        adStatsRepository.save(adStats);
     }
 }
