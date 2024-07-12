@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -31,7 +32,10 @@ public class AdStatsController {
         // userService를 사용하여 username을 통해 User 객체를 찾음
         User user = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        return adStatsService.getTop5AdsByViewCount(user.getId(), request.getStartDate(), request.getEndDate());
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = calculateStartDate(request.getPeriod(), endDate);
+
+        return adStatsService.getTop5AdsByViewCount(user.getId(), startDate, endDate);
     }
 
     @PostMapping("/top-played")
@@ -42,6 +46,22 @@ public class AdStatsController {
         // userService를 사용하여 username을 통해 User 객체를 찾음
         User user = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        return adStatsService.getTop5AdsByPlayTime(user.getId(), request.getStartDate(), request.getEndDate());
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = calculateStartDate(request.getPeriod(), endDate);
+
+        return adStatsService.getTop5AdsByPlayTime(user.getId(), startDate, endDate);
+    }
+
+    private LocalDate calculateStartDate(String period, LocalDate endDate) {
+        switch (period) {
+            case "1일":
+                return endDate.minusDays(1);
+            case "1주일":
+                return endDate.minusWeeks(1);
+            case "1달":
+                return endDate.minusMonths(1);
+            default:
+                throw new IllegalArgumentException("Invalid period: " + period);
+        }
     }
 }

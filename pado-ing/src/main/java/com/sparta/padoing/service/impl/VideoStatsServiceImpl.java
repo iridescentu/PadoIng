@@ -21,6 +21,7 @@ public class VideoStatsServiceImpl implements VideoStatsService {
 
     @Override
     public ResponseDto<Map<String, VideoStatsResponseDto>> getTop5VideosByViewCount(Long userId, LocalDate startDate, LocalDate endDate) {
+        System.out.println("Service: getTop5VideosByViewCount called with userId: " + userId + ", startDate: " + startDate + ", endDate: " + endDate);
         List<VideoStats> videoStats = videoStatsRepository.findTop5ByVideo_User_IdAndDateBetweenOrderByVideoViewDesc(userId, startDate, endDate);
         if (videoStats.isEmpty()) {
             return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다");

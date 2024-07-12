@@ -1,13 +1,10 @@
 package com.sparta.padoing.dto.request;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class StatsRequest {
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String period; // "1일", "1주일", "1달" 중 하나
 }
