@@ -7,6 +7,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface AdStatsService {
-    ResponseDto<Map<String, AdStatsResponseDto>> getTop5AdsByViewCount(Long userId, LocalDate startDate, LocalDate endDate);
-//    ResponseDto<Map<String, AdStatsResponseDto>> getTop5AdsByPlayTime(Long userId, LocalDate startDate, LocalDate endDate);
+    ResponseDto<Map<String, AdStatsResponseDto>> getTop5AdsByViewCount(Long userId, String period);
+    void generateAdStats(Long userId, LocalDate startDate, LocalDate endDate);
 }
