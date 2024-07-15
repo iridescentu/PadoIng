@@ -18,4 +18,7 @@ public interface VideoStatsRepository extends JpaRepository<VideoStats, VideoSta
 
     // 커스텀 쿼리로 삭제 메서드 추가
     void deleteByVideo_User_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+
+    // 새로운 메서드 추가
+    List<VideoStats> findByVideo_IdAndDateBetween(Long videoId, LocalDate startDate, LocalDate endDate);
 }

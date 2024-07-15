@@ -7,9 +7,9 @@ import com.sparta.padoing.model.WatchHistory;
 import com.sparta.padoing.repository.VideoStatsRepository;
 import com.sparta.padoing.repository.WatchHistoryRepository;
 import com.sparta.padoing.service.VideoStatsService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -80,9 +80,6 @@ public class VideoStatsServiceImpl implements VideoStatsService {
 
     @Override
     public void generateVideoStats(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 모든 날짜를 초기화
-        videoStatsRepository.deleteByVideo_User_IdAndDateBetween(userId, startDate, endDate);
-
         // 집계 데이터를 위한 Map 초기화
         Map<Long, VideoStats> statsMap = new LinkedHashMap<>();
 
@@ -95,7 +92,7 @@ public class VideoStatsServiceImpl implements VideoStatsService {
             videoStats.setPlayTime(videoStats.getPlayTime() + watchHistory.getWatchDuration());
         }
 
-        // DB에 저장
+        // DB에 저장 또는 업데이트
         for (VideoStats videoStats : statsMap.values()) {
             videoStatsRepository.save(videoStats);
         }
