@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional // 클래스 레벨에 트랜잭션 어노테이션 추가
 public class AdStatsServiceImpl implements AdStatsService {
 
     @Autowired
@@ -54,7 +55,6 @@ public class AdStatsServiceImpl implements AdStatsService {
     }
 
     @Override
-    @Transactional // 트랜잭션 어노테이션 추가
     public void generateAdStats(Long userId, LocalDate startDate, LocalDate endDate) {
         // 모든 날짜를 초기화
         adStatsRepository.deleteByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
