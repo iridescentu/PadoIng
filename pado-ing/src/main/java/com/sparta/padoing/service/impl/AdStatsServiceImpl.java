@@ -42,16 +42,16 @@ public class AdStatsServiceImpl implements AdStatsService {
         if (adStats.isEmpty()) {
             boolean hasAds = adStatsRepository.existsByVideoAd_Video_User_Id(userId);
             if (hasAds) {
-                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.", startDate, endDate);
             } else {
-                return new ResponseDto<>("NO_ADS", null, "현재 업로드된 광고가 없어 조회가 불가합니다.");
+                return new ResponseDto<>("NO_ADS", null, "현재 업로드된 광고가 없어 조회가 불가합니다.", startDate, endDate);
             }
         }
         Map<String, AdStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < adStats.size(); i++) {
             responseDtos.put("TOP " + (i + 1), AdStatsResponseDto.fromEntity(adStats.get(i)));
         }
-        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 ads by view count retrieved successfully");
+        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 ads by view count retrieved successfully", startDate, endDate);
     }
 
     @Override

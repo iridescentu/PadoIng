@@ -7,9 +7,9 @@ import com.sparta.padoing.model.WatchHistory;
 import com.sparta.padoing.repository.VideoStatsRepository;
 import com.sparta.padoing.repository.WatchHistoryRepository;
 import com.sparta.padoing.service.VideoStatsService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // 트랜잭션 관련 임포트 추가
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -41,16 +41,16 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         if (videoStats.isEmpty()) {
             boolean hasVideos = videoStatsRepository.existsByVideo_User_Id(userId);
             if (hasVideos) {
-                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.", startDate, endDate);
             } else {
-                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.");
+                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.", startDate, endDate);
             }
         }
         Map<String, VideoStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < videoStats.size(); i++) {
             responseDtos.put("TOP " + (i + 1), VideoStatsResponseDto.fromEntity(videoStats.get(i)));
         }
-        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 videos by view count retrieved successfully");
+        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 videos by view count retrieved successfully", startDate, endDate);
     }
 
     @Override
@@ -66,16 +66,16 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         if (videoStats.isEmpty()) {
             boolean hasVideos = videoStatsRepository.existsByVideo_User_Id(userId);
             if (hasVideos) {
-                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.", startDate, endDate);
             } else {
-                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.");
+                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.", startDate, endDate);
             }
         }
         Map<String, VideoStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < videoStats.size(); i++) {
             responseDtos.put("TOP " + (i + 1), VideoStatsResponseDto.fromEntity(videoStats.get(i)));
         }
-        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 videos by play time retrieved successfully");
+        return new ResponseDto<>("SUCCESS", responseDtos, "Top 5 videos by play time retrieved successfully", startDate, endDate);
     }
 
     @Override
