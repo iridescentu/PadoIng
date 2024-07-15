@@ -3,7 +3,6 @@ package com.sparta.padoing.controller;
 import com.sparta.padoing.dto.request.StatsRequest;
 import com.sparta.padoing.dto.response.ResponseDto;
 import com.sparta.padoing.model.User;
-import com.sparta.padoing.model.VideoStmt;
 import com.sparta.padoing.service.VideoStmtService;
 import com.sparta.padoing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,7 +25,7 @@ public class VideoStmtController {
     private UserService userService;
 
     @PostMapping
-    public ResponseDto<List<VideoStmt>> getVideoStmts(@RequestBody StatsRequest request) {
+    public ResponseDto<Map<String, Object>> getVideoStmts(@RequestBody StatsRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));

@@ -31,14 +31,30 @@ public class AdStmtServiceImpl implements AdStmtService {
     private VideoAdRepository videoAdRepository;
 
     @Override
-    public ResponseDto<List<AdStmt>> getAdStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
+    public ResponseDto<Map<String, Object>> getAdStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
         generateAdStmt(userId, startDate, endDate);
 
         List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
         if (adStmts.isEmpty()) {
             return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.");
         }
-        return new ResponseDto<>("SUCCESS", adStmts, "Ad statements retrieved successfully");
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        long totalStmt = 0;
+
+        for (AdStmt adStmt : adStmts) {
+            long adStmtValue = adStmt.getAdStmt();
+            totalStmt += adStmtValue;
+
+            Map<String, Object> adDetails = new LinkedHashMap<>();
+            adDetails.put("videoTitle", adStmt.getVideoAd().getVideo().getTitle());
+            adDetails.put("adTitle", adStmt.getVideoAd().getAd().getTitle());
+            adDetails.put("adStmt", adStmtValue);
+            responseMap.put("Ad " + adStmt.getVideoAd().getId(), adDetails);
+        }
+
+        responseMap.put("totalStmt", totalStmt);
+        return new ResponseDto<>("SUCCESS", responseMap, "Ad statements retrieved successfully");
     }
 
     @Override
@@ -58,13 +74,13 @@ public class AdStmtServiceImpl implements AdStmtService {
             totalRevenue += adRevenue;
 
             Map<String, Object> adDetails = new LinkedHashMap<>();
-            adDetails.put("Video Title", adStmt.getVideoAd().getVideo().getTitle());
-            adDetails.put("Ad Title", adStmt.getVideoAd().getAd().getTitle());
-            adDetails.put("Ad Revenue", adRevenue);
+            adDetails.put("videoTitle", adStmt.getVideoAd().getVideo().getTitle());
+            adDetails.put("adTitle", adStmt.getVideoAd().getAd().getTitle());
+            adDetails.put("adRevenue", adRevenue);
             responseMap.put("Ad " + adStmt.getVideoAd().getId(), adDetails);
         }
 
-        responseMap.put("Total Revenue", totalRevenue);
+        responseMap.put("totalRevenue", totalRevenue);
         return new ResponseDto<>("SUCCESS", responseMap, "Ad revenue calculated successfully");
     }
 

@@ -1,9 +1,11 @@
 package com.sparta.padoing.service.impl;
 
 import com.sparta.padoing.dto.response.ResponseDto;
+import com.sparta.padoing.model.AdStmt;
 import com.sparta.padoing.model.Video;
 import com.sparta.padoing.model.VideoStmt;
 import com.sparta.padoing.model.VideoStats;
+import com.sparta.padoing.repository.AdStmtRepository;
 import com.sparta.padoing.repository.VideoRepository;
 import com.sparta.padoing.repository.VideoStmtRepository;
 import com.sparta.padoing.repository.VideoStatsRepository;
@@ -30,21 +32,45 @@ public class VideoStmtServiceImpl implements VideoStmtService {
     @Autowired
     private VideoRepository videoRepository;
 
+    @Autowired
+    private AdStmtRepository adStmtRepository;
+
     @Override
-    public ResponseDto<List<VideoStmt>> getVideoStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 정산 계산 로직 실행
+    public ResponseDto<Map<String, Object>> getVideoStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
         generateVideoStmt(userId, startDate, endDate);
 
         List<VideoStmt> videoStmts = videoStmtRepository.findByVideo_User_IdAndDateBetween(userId, startDate, endDate);
-        if (videoStmts.isEmpty()) {
+        List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
+
+        if (videoStmts.isEmpty() && adStmts.isEmpty()) {
             return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.");
         }
-        return new ResponseDto<>("SUCCESS", videoStmts, "Video statements retrieved successfully");
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        long totalRevenue = 0;
+
+        for (VideoStmt videoStmt : videoStmts) {
+            long videoRevenue = videoStmt.getVideoStmt();
+            long adRevenue = adStmts.stream()
+                    .filter(adStmt -> adStmt.getVideoAd().getVideo().getId().equals(videoStmt.getVideo().getId()))
+                    .mapToLong(this::calculateAdRevenue)
+                    .sum();
+            totalRevenue += videoRevenue + adRevenue;
+
+            Map<String, Object> videoDetails = new LinkedHashMap<>();
+            videoDetails.put("videoTitle", videoStmt.getVideo().getTitle());
+            videoDetails.put("videoStmt", videoRevenue);
+            videoDetails.put("adStmt", adRevenue);
+
+            responseMap.put("Video " + videoStmt.getVideo().getId(), videoDetails);
+        }
+
+        responseMap.put("totalRevenue", totalRevenue);
+        return new ResponseDto<>("SUCCESS", responseMap, "Video statements retrieved successfully");
     }
 
     @Override
     public ResponseDto<Map<String, Object>> getVideoRevenue(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 정산 계산 로직 실행
         generateVideoStmt(userId, startDate, endDate);
 
         List<VideoStmt> videoStmts = videoStmtRepository.findByVideo_User_IdAndDateBetween(userId, startDate, endDate);
@@ -60,13 +86,30 @@ public class VideoStmtServiceImpl implements VideoStmtService {
             totalRevenue += videoRevenue;
 
             Map<String, Object> videoDetails = new LinkedHashMap<>();
-            videoDetails.put("Video Title", videoStmt.getVideo().getTitle());
-            videoDetails.put("Video Revenue", videoRevenue);
+            videoDetails.put("videoTitle", videoStmt.getVideo().getTitle());
+            videoDetails.put("videoRevenue", videoRevenue);
             responseMap.put("Video " + videoStmt.getVideo().getId(), videoDetails);
         }
 
-        responseMap.put("Total Revenue", totalRevenue);
+        responseMap.put("totalRevenue", totalRevenue);
         return new ResponseDto<>("SUCCESS", responseMap, "Video revenue calculated successfully");
+    }
+
+    private long calculateAdRevenue(AdStmt adStmt) {
+        long viewCount = adStmt.getAdView();
+        long rate;
+
+        if (viewCount < 100000) {
+            rate = 10;
+        } else if (viewCount < 500000) {
+            rate = 12;
+        } else if (viewCount < 1000000) {
+            rate = 15;
+        } else {
+            rate = 20;
+        }
+
+        return (viewCount * rate) / 100;
     }
 
     private long calculateVideoRevenue(long viewCount) {
