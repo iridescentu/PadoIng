@@ -10,7 +10,7 @@ import com.sparta.padoing.repository.AdHistoryRepository;
 import com.sparta.padoing.service.AdStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // 트랜잭션 관련 임포트 추가
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional // 클래스 레벨에 트랜잭션 어노테이션 추가
+@Transactional
 public class AdStatsServiceImpl implements AdStatsService {
 
     @Autowired
@@ -47,6 +47,7 @@ public class AdStatsServiceImpl implements AdStatsService {
                 return new ResponseDto<>("NO_ADS", null, "현재 업로드된 광고가 없어 조회가 불가합니다.", startDate, endDate);
             }
         }
+
         Map<String, AdStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < adStats.size(); i++) {
             responseDtos.put("TOP " + (i + 1), AdStatsResponseDto.fromEntity(adStats.get(i)));
@@ -56,10 +57,7 @@ public class AdStatsServiceImpl implements AdStatsService {
 
     @Override
     public void generateAdStats(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 모든 날짜를 초기화
-        adStatsRepository.deleteByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
-
-        // 집계 데이터를 위한 Map 초기화
+        // 기존 데이터를 삭제하지 않고 누적 계산 방식으로 수정
         Map<Long, AdStats> statsMap = new LinkedHashMap<>();
 
         List<AdHistory> adHistories = adHistoryRepository.findByCreatedAtBetween(startDate, endDate);
@@ -70,7 +68,6 @@ public class AdStatsServiceImpl implements AdStatsService {
             adStats.setAdView(adStats.getAdView() + 1);
         }
 
-        // DB에 저장
         for (AdStats adStats : statsMap.values()) {
             adStatsRepository.save(adStats);
         }

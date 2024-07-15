@@ -2,8 +2,10 @@ package com.sparta.padoing.service.impl;
 
 import com.sparta.padoing.dto.response.ResponseDto;
 import com.sparta.padoing.model.AdStmt;
+import com.sparta.padoing.model.AdStats;
 import com.sparta.padoing.model.VideoAd;
 import com.sparta.padoing.repository.AdStmtRepository;
+import com.sparta.padoing.repository.AdStatsRepository;
 import com.sparta.padoing.repository.VideoAdRepository;
 import com.sparta.padoing.service.AdStmtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class AdStmtServiceImpl implements AdStmtService {
 
     @Autowired
     private AdStmtRepository adStmtRepository;
+
+    @Autowired
+    private AdStatsRepository adStatsRepository;
 
     @Autowired
     private VideoAdRepository videoAdRepository;
@@ -56,7 +61,7 @@ public class AdStmtServiceImpl implements AdStmtService {
 
     private long calculateAdRevenue(AdStmt adStmt) {
         long viewCount = adStmt.getAdView();
-        long rate = 0;
+        long rate;
 
         if (viewCount < 100000) {
             rate = 10;
@@ -75,13 +80,16 @@ public class AdStmtServiceImpl implements AdStmtService {
     public void generateAdStmt(Long userId, LocalDate startDate, LocalDate endDate) {
         List<VideoAd> videoAds = videoAdRepository.findByVideo_User_Id(userId);
         for (VideoAd videoAd : videoAds) {
-            long totalViewCount = 0;
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                totalViewCount += videoAd.getViews();
+                List<AdStats> adStatsList = adStatsRepository.findByVideoAd_IdAndDateBetween(videoAd.getId(), date, date);
+                long totalViewCount = 0;
+                for (AdStats adStats : adStatsList) {
+                    totalViewCount += adStats.getAdView();
+                }
+                int adStmtValue = (int) totalViewCount;
+                AdStmt stmt = new AdStmt(videoAd, date, adStmtValue, adStmtValue);
+                adStmtRepository.save(stmt);
             }
-            int adStmtValue = (int) totalViewCount;
-            AdStmt stmt = new AdStmt(videoAd, endDate, adStmtValue, adStmtValue);
-            adStmtRepository.save(stmt);
         }
     }
 }
