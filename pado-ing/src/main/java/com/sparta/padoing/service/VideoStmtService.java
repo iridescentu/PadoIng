@@ -5,7 +5,9 @@ import com.sparta.padoing.model.VideoStmt;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface VideoStmtService {
     ResponseDto<List<VideoStmt>> getVideoStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate);
+    ResponseDto<Map<String, Long>> getVideoRevenue(Long userId, LocalDate startDate, LocalDate endDate);
 }

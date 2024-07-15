@@ -30,11 +30,19 @@ public class AdStmt {
     @Column(name = "ad_stmt")
     private int adStmt;
 
-    public static AdStmt of(VideoAd videoAd, int adStmt) {
+    @Column(name = "ad_view")
+    private long adView;
+
+    public static AdStmt of(VideoAd videoAd, int adStmt, long adView) {
         return AdStmt.builder()
                 .videoAd(videoAd)
                 .date(LocalDate.now())
                 .adStmt(adStmt)
+                .adView(adView)
                 .build();
+    }
+
+    public long getAdView() {
+        return adView;
     }
 }

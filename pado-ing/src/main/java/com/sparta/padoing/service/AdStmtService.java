@@ -5,7 +5,9 @@ import com.sparta.padoing.model.AdStmt;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface AdStmtService {
-    ResponseDto<List<AdStmt>> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+    ResponseDto<List<AdStmt>> getAdStmtByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate);
+    ResponseDto<Map<String, Long>> getAdRevenue(Long userId, LocalDate startDate, LocalDate endDate);
 }
