@@ -31,10 +31,10 @@ public class AdStats {
     @Column(name = "ad_view")
     private int adView;
 
-    public static AdStats of(VideoAd videoAd, int adView) {
+    public static AdStats of(VideoAd videoAd, int adView, LocalDate date) {
         return AdStats.builder()
                 .videoAd(videoAd)
-                .date(LocalDate.now())
+                .date(date)
                 .adView(adView)
                 .build();
     }

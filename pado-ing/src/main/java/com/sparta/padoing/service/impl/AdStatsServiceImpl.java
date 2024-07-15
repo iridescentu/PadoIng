@@ -10,6 +10,7 @@ import com.sparta.padoing.repository.AdHistoryRepository;
 import com.sparta.padoing.service.AdStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // 트랜잭션 관련 임포트 추가
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -17,7 +18,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AdStatsServiceImpl implements AdStatsService {
@@ -33,10 +33,8 @@ public class AdStatsServiceImpl implements AdStatsService {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
 
-        // 로그 추가
         System.out.println("AdStatsServiceImpl.getTop5AdsByViewCount - Start Date: " + startDate + ", End Date: " + endDate);
 
-        // 통계 생성 로직 호출
         generateAdStats(userId, startDate, endDate);
 
         List<AdStats> adStats = adStatsRepository.findTop5ByVideoAd_Video_User_IdAndDateBetweenOrderByAdViewDesc(userId, startDate, endDate);
@@ -56,14 +54,24 @@ public class AdStatsServiceImpl implements AdStatsService {
     }
 
     @Override
+    @Transactional // 트랜잭션 어노테이션 추가
     public void generateAdStats(Long userId, LocalDate startDate, LocalDate endDate) {
+        // 모든 날짜를 초기화
+        adStatsRepository.deleteByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
+
+        // 집계 데이터를 위한 Map 초기화
+        Map<Long, AdStats> statsMap = new LinkedHashMap<>();
+
         List<AdHistory> adHistories = adHistoryRepository.findByCreatedAtBetween(startDate, endDate);
         for (AdHistory adHistory : adHistories) {
             LocalDate date = adHistory.getCreatedAt();
             VideoAd videoAd = adHistory.getVideoAd();
-            Optional<AdStats> adStatsOpt = adStatsRepository.findByVideoAd_IdAndDate(videoAd.getId(), date);
-            AdStats adStats = adStatsOpt.orElseGet(() -> AdStats.of(videoAd, 0));
+            AdStats adStats = statsMap.computeIfAbsent(videoAd.getId(), k -> AdStats.of(videoAd, 0, date));
             adStats.setAdView(adStats.getAdView() + 1);
+        }
+
+        // DB에 저장
+        for (AdStats adStats : statsMap.values()) {
             adStatsRepository.save(adStats);
         }
     }

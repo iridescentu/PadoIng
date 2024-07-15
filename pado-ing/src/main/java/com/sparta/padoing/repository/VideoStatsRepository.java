@@ -15,4 +15,7 @@ public interface VideoStatsRepository extends JpaRepository<VideoStats, VideoSta
     List<VideoStats> findTop5ByVideo_User_IdAndDateBetweenOrderByPlayTimeDesc(Long userId, LocalDate startDate, LocalDate endDate);
     Optional<VideoStats> findByVideo_IdAndDate(Long videoId, LocalDate date);
     boolean existsByVideo_User_Id(Long userId);
+
+    // 커스텀 쿼리로 삭제 메서드 추가
+    void deleteByVideo_User_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
 }

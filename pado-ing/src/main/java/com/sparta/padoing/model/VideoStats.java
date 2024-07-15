@@ -34,10 +34,10 @@ public class VideoStats {
     @Column(name = "play_time")
     private long playTime;
 
-    public static VideoStats of(Video video, int videoView, long playTime) {
+    public static VideoStats of(Video video, int videoView, long playTime, LocalDate date) {
         return VideoStats.builder()
                 .video(video)
-                .date(LocalDate.now())
+                .date(date)
                 .videoView(videoView)
                 .playTime(playTime)
                 .build();

@@ -14,4 +14,5 @@ public interface AdStatsRepository extends JpaRepository<AdStats, AdStatsId> {
     List<AdStats> findTop5ByVideoAd_Video_User_IdAndDateBetweenOrderByAdViewDesc(Long userId, LocalDate startDate, LocalDate endDate);
     Optional<AdStats> findByVideoAd_IdAndDate(Long videoAdId, LocalDate date);
     boolean existsByVideoAd_Video_User_Id(Long userId);
+    void deleteByVideoAd_Video_User_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate); // 추가된 메서드
 }

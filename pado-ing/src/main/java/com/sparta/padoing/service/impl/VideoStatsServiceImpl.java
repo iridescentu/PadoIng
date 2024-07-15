@@ -9,6 +9,7 @@ import com.sparta.padoing.repository.WatchHistoryRepository;
 import com.sparta.padoing.service.VideoStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // 트랜잭션 관련 임포트 추가
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,9 +17,9 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
+@Transactional // 클래스 레벨에 트랜잭션 어노테이션 추가
 public class VideoStatsServiceImpl implements VideoStatsService {
 
     @Autowired
@@ -32,10 +33,8 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
 
-        // 로그 추가
         System.out.println("VideoStatsServiceImpl.getTop5VideosByViewCount - Start Date: " + startDate + ", End Date: " + endDate);
 
-        // 통계 생성 로직 호출
         generateVideoStats(userId, startDate, endDate);
 
         List<VideoStats> videoStats = videoStatsRepository.findTop5ByVideo_User_IdAndDateBetweenOrderByVideoViewDesc(userId, startDate, endDate);
@@ -59,10 +58,8 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
 
-        // 로그 추가
         System.out.println("VideoStatsServiceImpl.getTop5VideosByPlayTime - Start Date: " + startDate + ", End Date: " + endDate);
 
-        // 통계 생성 로직 호출
         generateVideoStats(userId, startDate, endDate);
 
         List<VideoStats> videoStats = videoStatsRepository.findTop5ByVideo_User_IdAndDateBetweenOrderByPlayTimeDesc(userId, startDate, endDate);
@@ -83,14 +80,23 @@ public class VideoStatsServiceImpl implements VideoStatsService {
 
     @Override
     public void generateVideoStats(Long userId, LocalDate startDate, LocalDate endDate) {
+        // 모든 날짜를 초기화
+        videoStatsRepository.deleteByVideo_User_IdAndDateBetween(userId, startDate, endDate);
+
+        // 집계 데이터를 위한 Map 초기화
+        Map<Long, VideoStats> statsMap = new LinkedHashMap<>();
+
         List<WatchHistory> watchHistories = watchHistoryRepository.findByCreatedAtBetween(startDate, endDate);
         for (WatchHistory watchHistory : watchHistories) {
             LocalDate date = watchHistory.getCreatedAt();
             Long videoId = watchHistory.getVideo().getId();
-            Optional<VideoStats> videoStatsOpt = videoStatsRepository.findByVideo_IdAndDate(videoId, date);
-            VideoStats videoStats = videoStatsOpt.orElseGet(() -> VideoStats.of(watchHistory.getVideo(), 0, 0L));
+            VideoStats videoStats = statsMap.computeIfAbsent(videoId, k -> VideoStats.of(watchHistory.getVideo(), 0, 0L, date));
             videoStats.setVideoView(videoStats.getVideoView() + 1);
             videoStats.setPlayTime(videoStats.getPlayTime() + watchHistory.getWatchDuration());
+        }
+
+        // DB에 저장
+        for (VideoStats videoStats : statsMap.values()) {
             videoStatsRepository.save(videoStats);
         }
     }
