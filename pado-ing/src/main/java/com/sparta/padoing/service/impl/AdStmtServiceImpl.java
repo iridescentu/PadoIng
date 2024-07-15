@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,16 +89,16 @@ public class AdStmtServiceImpl implements AdStmtService {
     public void generateAdStmt(Long userId, LocalDate startDate, LocalDate endDate) {
         List<VideoAd> videoAds = videoAdRepository.findByVideo_User_Id(userId);
         for (VideoAd videoAd : videoAds) {
+            long totalViewCount = 0;
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                 List<AdStats> adStatsList = adStatsRepository.findByVideoAd_IdAndDateBetween(videoAd.getId(), date, date);
-                long totalViewCount = 0;
                 for (AdStats adStats : adStatsList) {
                     totalViewCount += adStats.getAdView();
                 }
-                int adStmtValue = (int) totalViewCount;
-                AdStmt stmt = new AdStmt(videoAd, date, adStmtValue, adStmtValue);
-                adStmtRepository.save(stmt);
             }
+            int adStmtValue = (int) totalViewCount;
+            AdStmt stmt = new AdStmt(videoAd, endDate, adStmtValue, adStmtValue);
+            adStmtRepository.save(stmt);
         }
     }
 }

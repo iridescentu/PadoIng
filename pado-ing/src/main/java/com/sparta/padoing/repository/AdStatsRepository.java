@@ -15,4 +15,5 @@ public interface AdStatsRepository extends JpaRepository<AdStats, AdStatsId> {
     Optional<AdStats> findByVideoAd_IdAndDate(Long videoAdId, LocalDate date);
     boolean existsByVideoAd_Video_User_Id(Long userId);
     List<AdStats> findByVideoAd_IdAndDateBetween(Long videoAdId, LocalDate startDate, LocalDate endDate);
+    void deleteByVideoAd_Video_User_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
 }

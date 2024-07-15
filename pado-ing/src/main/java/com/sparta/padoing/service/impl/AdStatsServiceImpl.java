@@ -47,7 +47,6 @@ public class AdStatsServiceImpl implements AdStatsService {
                 return new ResponseDto<>("NO_ADS", null, "현재 업로드된 광고가 없어 조회가 불가합니다.", startDate, endDate);
             }
         }
-
         Map<String, AdStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < adStats.size(); i++) {
             responseDtos.put("TOP " + (i + 1), AdStatsResponseDto.fromEntity(adStats.get(i)));
@@ -57,19 +56,26 @@ public class AdStatsServiceImpl implements AdStatsService {
 
     @Override
     public void generateAdStats(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 기존 데이터를 삭제하지 않고 누적 계산 방식으로 수정
-        Map<Long, AdStats> statsMap = new LinkedHashMap<>();
+        // 모든 날짜를 초기화
+        adStatsRepository.deleteByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
+
+        // 집계 데이터를 위한 Map 초기화
+        Map<Long, Map<LocalDate, AdStats>> statsMap = new LinkedHashMap<>();
 
         List<AdHistory> adHistories = adHistoryRepository.findByCreatedAtBetween(startDate, endDate);
         for (AdHistory adHistory : adHistories) {
             LocalDate date = adHistory.getCreatedAt();
             VideoAd videoAd = adHistory.getVideoAd();
-            AdStats adStats = statsMap.computeIfAbsent(videoAd.getId(), k -> AdStats.of(videoAd, 0, date));
-            adStats.setAdView(adStats.getAdView() + 1);
+            statsMap.computeIfAbsent(videoAd.getId(), k -> new LinkedHashMap<>())
+                    .computeIfAbsent(date, k -> AdStats.of(videoAd, 0, date))
+                    .setAdView(statsMap.get(videoAd.getId()).get(date).getAdView() + 1);
         }
 
-        for (AdStats adStats : statsMap.values()) {
-            adStatsRepository.save(adStats);
+        // DB에 저장
+        for (Map<LocalDate, AdStats> dateMap : statsMap.values()) {
+            for (AdStats adStats : dateMap.values()) {
+                adStatsRepository.save(adStats);
+            }
         }
     }
 
