@@ -33,6 +33,9 @@ public class AdStatsServiceImpl implements AdStatsService {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
 
+        // 로그 추가
+        System.out.println("AdStatsServiceImpl.getTop5AdsByViewCount - Start Date: " + startDate + ", End Date: " + endDate);
+
         // 통계 생성 로직 호출
         generateAdStats(userId, startDate, endDate);
 

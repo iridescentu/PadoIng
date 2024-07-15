@@ -32,6 +32,9 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
 
+        // 로그 추가
+        System.out.println("VideoStatsServiceImpl.getTop5VideosByViewCount - Start Date: " + startDate + ", End Date: " + endDate);
+
         // 통계 생성 로직 호출
         generateVideoStats(userId, startDate, endDate);
 
@@ -55,6 +58,9 @@ public class VideoStatsServiceImpl implements VideoStatsService {
     public ResponseDto<Map<String, VideoStatsResponseDto>> getTop5VideosByPlayTime(Long userId, String period) {
         LocalDate startDate = getStartDate(period);
         LocalDate endDate = getEndDate(period);
+
+        // 로그 추가
+        System.out.println("VideoStatsServiceImpl.getTop5VideosByPlayTime - Start Date: " + startDate + ", End Date: " + endDate);
 
         // 통계 생성 로직 호출
         generateVideoStats(userId, startDate, endDate);
