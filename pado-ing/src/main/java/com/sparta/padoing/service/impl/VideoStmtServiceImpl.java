@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public class VideoStmtServiceImpl implements VideoStmtService {
     }
 
     @Override
-    public ResponseDto<Map<String, Long>> getVideoRevenue(Long userId, LocalDate startDate, LocalDate endDate) {
+    public ResponseDto<Map<String, Object>> getVideoRevenue(Long userId, LocalDate startDate, LocalDate endDate) {
         // 정산 계산 로직 실행
         generateVideoStmt(userId, startDate, endDate);
 
@@ -52,13 +52,21 @@ public class VideoStmtServiceImpl implements VideoStmtService {
             return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
         }
 
-        Map<String, Long> videoRevenueMap = new HashMap<>();
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        long totalRevenue = 0;
+
         for (VideoStmt videoStmt : videoStmts) {
-            long revenue = videoStmt.getVideoStmt();
-            videoRevenueMap.put("Video " + videoStmt.getVideo().getId(), revenue);
+            long videoRevenue = videoStmt.getVideoStmt();
+            totalRevenue += videoRevenue;
+
+            Map<String, Object> videoDetails = new LinkedHashMap<>();
+            videoDetails.put("Video Title", videoStmt.getVideo().getTitle());
+            videoDetails.put("Video Revenue", videoRevenue);
+            responseMap.put("Video " + videoStmt.getVideo().getId(), videoDetails);
         }
 
-        return new ResponseDto<>("SUCCESS", videoRevenueMap, "Video revenue calculated successfully");
+        responseMap.put("Total Revenue", totalRevenue);
+        return new ResponseDto<>("SUCCESS", responseMap, "Video revenue calculated successfully");
     }
 
     private long calculateVideoRevenue(long viewCount) {

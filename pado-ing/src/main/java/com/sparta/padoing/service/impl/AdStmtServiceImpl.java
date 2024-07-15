@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class AdStmtServiceImpl implements AdStmtService {
     }
 
     @Override
-    public ResponseDto<Map<String, Long>> getAdRevenue(Long userId, LocalDate startDate, LocalDate endDate) {
+    public ResponseDto<Map<String, Object>> getAdRevenue(Long userId, LocalDate startDate, LocalDate endDate) {
         generateAdStmt(userId, startDate, endDate);
 
         List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
@@ -50,13 +51,22 @@ public class AdStmtServiceImpl implements AdStmtService {
             return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
         }
 
-        Map<String, Long> adRevenueMap = new HashMap<>();
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        long totalRevenue = 0;
+
         for (AdStmt adStmt : adStmts) {
-            long revenue = calculateAdRevenue(adStmt);
-            adRevenueMap.put("Ad " + adStmt.getVideoAd().getId(), revenue);
+            long adRevenue = calculateAdRevenue(adStmt);
+            totalRevenue += adRevenue;
+
+            Map<String, Object> adDetails = new LinkedHashMap<>();
+            adDetails.put("Video Title", adStmt.getVideoAd().getVideo().getTitle());
+            adDetails.put("Ad Title", adStmt.getVideoAd().getAd().getTitle());
+            adDetails.put("Ad Revenue", adRevenue);
+            responseMap.put("Ad " + adStmt.getVideoAd().getId(), adDetails);
         }
 
-        return new ResponseDto<>("SUCCESS", adRevenueMap, "Ad revenue calculated successfully");
+        responseMap.put("Total Revenue", totalRevenue);
+        return new ResponseDto<>("SUCCESS", responseMap, "Ad revenue calculated successfully");
     }
 
     private long calculateAdRevenue(AdStmt adStmt) {
