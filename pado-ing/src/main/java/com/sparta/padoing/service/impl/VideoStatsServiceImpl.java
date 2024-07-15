@@ -24,7 +24,12 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         System.out.println("Service: getTop5VideosByViewCount called with userId: " + userId + ", startDate: " + startDate + ", endDate: " + endDate);
         List<VideoStats> videoStats = videoStatsRepository.findTop5ByVideo_User_IdAndDateBetweenOrderByVideoViewDesc(userId, startDate, endDate);
         if (videoStats.isEmpty()) {
-            return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다");
+            boolean hasVideos = videoStatsRepository.existsByVideo_User_Id(userId);
+            if (hasVideos) {
+                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+            } else {
+                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.");
+            }
         }
         Map<String, VideoStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < videoStats.size(); i++) {
@@ -38,7 +43,12 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         System.out.println("Service: getTop5VideosByPlayTime called with userId: " + userId + ", startDate: " + startDate + ", endDate: " + endDate);
         List<VideoStats> videoStats = videoStatsRepository.findTop5ByVideo_User_IdAndDateBetweenOrderByPlayTimeDesc(userId, startDate, endDate);
         if (videoStats.isEmpty()) {
-            return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다");
+            boolean hasVideos = videoStatsRepository.existsByVideo_User_Id(userId);
+            if (hasVideos) {
+                return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+            } else {
+                return new ResponseDto<>("NO_VIDEOS", null, "현재 업로드된 동영상이 없어 조회가 불가합니다.");
+            }
         }
         Map<String, VideoStatsResponseDto> responseDtos = new LinkedHashMap<>();
         for (int i = 0; i < videoStats.size(); i++) {

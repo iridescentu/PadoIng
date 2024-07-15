@@ -53,20 +53,6 @@ public class VideoStatsController {
         return videoStatsService.getTop5VideosByPlayTime(user.getId(), startDate, endDate);
     }
 
-//    private LocalDate calculateStartDate(String period, LocalDate endDate) {
-//        System.out.println("Controller: calculateStartDate called with Period: " + period + ", EndDate: " + endDate);
-//        switch (period) {
-//            case "1일":
-//                return endDate.minusDays(1);
-//            case "1주일":
-//                return endDate.minusWeeks(1);
-//            case "1달":
-//                return endDate.minusMonths(1);
-//            default:
-//                throw new IllegalArgumentException("Invalid period: " + period);
-//        }
-//    }
-
     private LocalDate calculateStartDate(String period, LocalDate endDate) {
         System.out.println("Controller: calculateStartDate called with Period: " + period + ", EndDate: " + endDate);
         switch (period) {

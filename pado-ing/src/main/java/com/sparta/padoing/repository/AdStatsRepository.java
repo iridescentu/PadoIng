@@ -12,5 +12,8 @@ import java.util.Optional;
 @Repository
 public interface AdStatsRepository extends JpaRepository<AdStats, AdStatsId> {
     List<AdStats> findTop5ByVideoAd_Video_User_IdAndDateBetweenOrderByAdViewDesc(Long userId, LocalDate startDate, LocalDate endDate);
+//    List<AdStats> findTop5ByVideoAd_Video_User_IdAndDateBetweenOrderByPlayTimeDesc(Long userId, LocalDate startDate, LocalDate endDate);
     Optional<AdStats> findByVideoAd_IdAndDate(Long videoAdId, LocalDate date);
+    boolean existsByVideoAd_Video_User_Id(Long userId);
+
 }
