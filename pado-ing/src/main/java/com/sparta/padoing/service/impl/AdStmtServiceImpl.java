@@ -36,7 +36,7 @@ public class AdStmtServiceImpl implements AdStmtService {
 
         List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
         if (adStmts.isEmpty()) {
-            return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.");
+            return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.", startDate, endDate);
         }
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
@@ -54,7 +54,7 @@ public class AdStmtServiceImpl implements AdStmtService {
         }
 
         responseMap.put("totalStmt", totalStmt);
-        return new ResponseDto<>("SUCCESS", responseMap, "Ad statements retrieved successfully");
+        return new ResponseDto<>("SUCCESS", responseMap, "Ad statements retrieved successfully", startDate, endDate);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AdStmtServiceImpl implements AdStmtService {
 
         List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
         if (adStmts.isEmpty()) {
-            return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+            return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.", startDate, endDate);
         }
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
@@ -81,7 +81,7 @@ public class AdStmtServiceImpl implements AdStmtService {
         }
 
         responseMap.put("totalRevenue", totalRevenue);
-        return new ResponseDto<>("SUCCESS", responseMap, "Ad revenue calculated successfully");
+        return new ResponseDto<>("SUCCESS", responseMap, "Ad revenue calculated successfully", startDate, endDate);
     }
 
     private long calculateAdRevenue(AdStmt adStmt) {

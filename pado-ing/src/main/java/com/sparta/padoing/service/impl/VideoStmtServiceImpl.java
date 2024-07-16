@@ -43,7 +43,7 @@ public class VideoStmtServiceImpl implements VideoStmtService {
         List<AdStmt> adStmts = adStmtRepository.findByVideoAd_Video_User_IdAndDateBetween(userId, startDate, endDate);
 
         if (videoStmts.isEmpty() && adStmts.isEmpty()) {
-            return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.");
+            return new ResponseDto<>("NO_DATA", null, "조회할 데이터가 없습니다.", startDate, endDate);
         }
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
@@ -66,7 +66,7 @@ public class VideoStmtServiceImpl implements VideoStmtService {
         }
 
         responseMap.put("totalRevenue", totalRevenue);
-        return new ResponseDto<>("SUCCESS", responseMap, "Video statements retrieved successfully");
+        return new ResponseDto<>("SUCCESS", responseMap, "Video statements retrieved successfully", startDate, endDate);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class VideoStmtServiceImpl implements VideoStmtService {
 
         List<VideoStmt> videoStmts = videoStmtRepository.findByVideo_User_IdAndDateBetween(userId, startDate, endDate);
         if (videoStmts.isEmpty()) {
-            return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.");
+            return new ResponseDto<>("NO_DATA", null, "해당 조회 날짜에 조회할 데이터가 없습니다.", startDate, endDate);
         }
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
@@ -92,7 +92,7 @@ public class VideoStmtServiceImpl implements VideoStmtService {
         }
 
         responseMap.put("totalRevenue", totalRevenue);
-        return new ResponseDto<>("SUCCESS", responseMap, "Video revenue calculated successfully");
+        return new ResponseDto<>("SUCCESS", responseMap, "Video revenue calculated successfully", startDate, endDate);
     }
 
     private long calculateAdRevenue(AdStmt adStmt) {
@@ -141,7 +141,8 @@ public class VideoStmtServiceImpl implements VideoStmtService {
         for (Video video : videos) {
             long totalViewCount = getVideoView(video.getId(), startDate, endDate);
             int videoStmtValue = (int) calculateVideoRevenue(totalViewCount);
-            VideoStmt stmt = new VideoStmt(video, endDate, videoStmtValue);
+            int adStmtValue = 0; // adStmt 값을 기본값으로 초기화
+            VideoStmt stmt = new VideoStmt(video, endDate, videoStmtValue, adStmtValue); // 새로운 생성자를 사용합니다.
             videoStmtRepository.save(stmt);
         }
     }
