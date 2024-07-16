@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Map;
 
 @RestController
@@ -30,13 +31,14 @@ public class AdStmtController {
         String username = authentication.getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = calculateStartDate(request.getPeriod(), endDate);
+        LocalDate endDate = getEndDate(request.getPeriod());
+        LocalDate startDate = getStartDate(request.getPeriod());
 
-        // 정산 계산 로직 실행
-        adStmtService.generateAdStmt(user.getId(), startDate, endDate);
+        ResponseDto<Map<String, Object>> response = adStmtService.getAdStmtByUserIdAndDateRange(user.getId(), startDate, endDate);
+        response.setStartDate(startDate);
+        response.setEndDate(endDate);
 
-        return adStmtService.getAdStmtByUserIdAndDateRange(user.getId(), startDate, endDate);
+        return response;
     }
 
     @PostMapping("/revenue")
@@ -45,23 +47,39 @@ public class AdStmtController {
         String username = authentication.getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = calculateStartDate(request.getPeriod(), endDate);
+        LocalDate endDate = getEndDate(request.getPeriod());
+        LocalDate startDate = getStartDate(request.getPeriod());
 
-        // 정산 계산 로직 실행
-        adStmtService.generateAdStmt(user.getId(), startDate, endDate);
+        ResponseDto<Map<String, Object>> response = adStmtService.getAdRevenue(user.getId(), startDate, endDate);
+        response.setStartDate(startDate);
+        response.setEndDate(endDate);
 
-        return adStmtService.getAdRevenue(user.getId(), startDate, endDate);
+        return response;
     }
 
-    private LocalDate calculateStartDate(String period, LocalDate endDate) {
+    private LocalDate getStartDate(String period) {
+        LocalDate now = LocalDate.now();
         switch (period) {
             case "1일":
-                return endDate;
+                return now;
             case "1주일":
-                return endDate.with(DayOfWeek.MONDAY);
+                return now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             case "1달":
-                return endDate.withDayOfMonth(1);
+                return now.with(TemporalAdjusters.firstDayOfMonth());
+            default:
+                throw new IllegalArgumentException("Invalid period: " + period);
+        }
+    }
+
+    private LocalDate getEndDate(String period) {
+        LocalDate now = LocalDate.now();
+        switch (period) {
+            case "1일":
+                return now;
+            case "1주일":
+                return now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+            case "1달":
+                return now.with(TemporalAdjusters.lastDayOfMonth());
             default:
                 throw new IllegalArgumentException("Invalid period: " + period);
         }
