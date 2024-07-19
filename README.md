@@ -1,4 +1,3 @@
-```markdown
 # PadoIn'(PadoIng) Project
 
 ![Project Image](https://i.imgur.com/4wYiECq.jpeg)
@@ -107,4 +106,3 @@ docker-compose up -d
     - 정산 데이터는 1일 단위로 생성됩니다.
     - 정산 데이터는 영상별 단가와 광고별 단가를 기반으로 계산됩니다.
     - 동영상 길이에 따라 광고가 자동으로 등록됩니다 (5분당 1개씩).
-```
