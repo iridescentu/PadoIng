@@ -18,7 +18,7 @@ PadoIng 프로젝트는 동영상 스트리밍 플랫폼입니다. 사용자는 
 
 ## 📂 프로젝트 구조
 
-```
+
 PadoIng-master/
 ├── ERD/
 │   ├── PadoIng_ERD.png
@@ -48,7 +48,7 @@ PadoIng-master/
 │       └── PadoIngApplicationTests.java
 └── gradle/
 └── wrapper/
-```
+
 
 ## 📦 설치 및 실행
 
